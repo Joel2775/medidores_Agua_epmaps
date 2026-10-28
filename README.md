@@ -1,56 +1,45 @@
-# Welcome to your Expo app 👋
+# medidoresAgua
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Aplicación móvil de registro de lecturas de medidores de agua para técnicos de campo. Está construida con Expo SDK 57, React Native y TypeScript.
 
-## Get started
-
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+## Inicio rápido
 
 ```bash
-npm run reset-project
+npm install
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+La app inicia en modo de demostración (`EXPO_PUBLIC_DEMO_MODE=true`): usa tres medidores locales de ejemplo, no realiza llamadas a MockAPI y guarda lecturas y borradores en el dispositivo.
 
-### Other setup steps
+## Configuración de MockAPI
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+La URL base y las rutas se configuran en `.env`; el archivo local no debe subirse al repositorio. Usa `.env.example` como referencia:
 
-## Learn more
+```env
+EXPO_PUBLIC_API_URL=https://YOUR_PROJECT_ID.mockapi.io
+EXPO_PUBLIC_DEMO_MODE=false
+EXPO_PUBLIC_METERS_RESOURCE=meters
+EXPO_PUBLIC_READINGS_RESOURCE=readings
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+Crea los recursos `meters` y `readings` en MockAPI con estos campos:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- `meters`: `code` (`MED-` y seis dígitos), `accountNumber`, `address`, `sector`, `condition` (`normal`, `inaccesible` o `dañado`), `lastReading`, `lastReadingDate` y `averageMonthlyConsumption`.
+- `readings`: el servicio crea las lecturas con `clientId`, `meterId`, `meterCode`, `readingValue`, `condition`, `reasonOrDamageDescription`, `photoUri`, `isAnomalous`, `status`, `createdAt` y `monthYear`. `clientId` se usa para comprobar reintentos de sincronización.
 
-## Join the community
+Al consultar se usa `GET /<recurso-medidores>?code=MED-000001`. La sincronización consulta `GET /<recurso-lecturas>?clientId=<id>` antes de crear un registro con `POST /<recurso-lecturas>`. Si MockAPI devuelve un esquema diferente, la app informa el error en vez de aceptar datos incompletos.
 
-Join our community of developers creating universal apps.
+Las variables `EXPO_PUBLIC_*` se incorporan al bundle de la aplicación y no son secretas. No pongas contraseñas, tokens ni claves privadas en ellas. El acceso de técnico que viene con esta entrega es únicamente de demostración y no autentica contra un servidor. Las fotografías se conservan en el almacenamiento permanente del dispositivo; MockAPI no recibe ni aloja el archivo de imagen.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+La compilación web de SQLite requiere compatibilidad con WASM y que el servidor de despliegue use las cabeceras `Cross-Origin-Embedder-Policy: credentialless` y `Cross-Origin-Opener-Policy: same-origin`, incluidas en la configuración de Expo Router.
+
+## Funcionalidad
+
+- Validación estricta del código de medidor antes de habilitar una consulta.
+- Caché de medidores con TanStack Query.
+- Registro en SQLite con prevención de duplicados por medidor y mes.
+- Borradores persistidos y opción para continuar o descartar la captura pendiente.
+- Validaciones según estado, advertencia y confirmación de consumo anómalo, y evidencia fotográfica cuando es obligatoria.
+- Banner global de conectividad, estado de sincronización y edición únicamente de lecturas no sincronizadas.
+
+En modo real, al recuperar la conexión se sincronizan los registros locales con MockAPI. La clave de idempotencia `clientId` permite comprobar si una lectura ya fue creada antes de reintentar.

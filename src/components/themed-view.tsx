@@ -1,7 +1,7 @@
-import { View, type ViewProps } from 'react-native';
+import { StyleSheet, View, type ViewProps } from 'react-native';
 
+import { COLORS } from '@/constants/epmaps-theme';
 import { ThemeColor } from '@/constants/theme';
-import { useTheme } from '@/hooks/use-theme';
 
 export type ThemedViewProps = ViewProps & {
   lightColor?: string;
@@ -10,7 +10,13 @@ export type ThemedViewProps = ViewProps & {
 };
 
 export function ThemedView({ style, lightColor, darkColor, type, ...otherProps }: ThemedViewProps) {
-  const theme = useTheme();
-
-  return <View style={[{ backgroundColor: theme[type ?? 'background'] }, style]} {...otherProps} />;
+  return <View style={[styles[type ?? 'background'], style]} {...otherProps} />;
 }
+
+const styles = StyleSheet.create({
+  text: { backgroundColor: COLORS.textPrimary },
+  background: { backgroundColor: COLORS.background },
+  backgroundElement: { backgroundColor: COLORS.surface },
+  backgroundSelected: { backgroundColor: COLORS.surfaceSecondary },
+  textSecondary: { backgroundColor: COLORS.textSecondary },
+});

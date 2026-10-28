@@ -3,24 +3,23 @@
  * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
  */
 
-import '@/global.css';
-
 import { Platform } from 'react-native';
+import { COLORS } from '@/constants/epmaps-theme';
 
 export const Colors = {
   light: {
-    text: '#000000',
-    background: '#ffffff',
-    backgroundElement: '#F0F0F3',
-    backgroundSelected: '#E0E1E6',
-    textSecondary: '#60646C',
+    text: COLORS.textPrimary,
+    background: COLORS.background,
+    backgroundElement: COLORS.surface,
+    backgroundSelected: COLORS.surfaceSecondary,
+    textSecondary: COLORS.textSecondary,
   },
   dark: {
-    text: '#ffffff',
-    background: '#000000',
-    backgroundElement: '#212225',
-    backgroundSelected: '#2E3135',
-    textSecondary: '#B0B4BA',
+    text: COLORS.textPrimary,
+    background: COLORS.background,
+    backgroundElement: COLORS.surface,
+    backgroundSelected: COLORS.surfaceSecondary,
+    textSecondary: COLORS.textSecondary,
   },
 } as const;
 
@@ -44,10 +43,10 @@ export const Fonts = Platform.select({
     mono: 'monospace',
   },
   web: {
-    sans: 'var(--font-display)',
-    serif: 'var(--font-serif)',
-    rounded: 'var(--font-rounded)',
-    mono: 'var(--font-mono)',
+    sans: 'system-ui',
+    serif: 'serif',
+    rounded: 'system-ui',
+    mono: 'monospace',
   },
 });
 

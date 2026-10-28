@@ -7,25 +7,26 @@ import {
   TabListProps,
 } from 'expo-router/ui';
 import { SymbolView } from 'expo-symbols';
-import { Pressable, useColorScheme, View, StyleSheet } from 'react-native';
+import { Pressable, View, StyleSheet } from 'react-native';
 
 import { ExternalLink } from './external-link';
 import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
 
-import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
+import { COLORS, RADIUS, SHADOWS, SPACING } from '@/constants/epmaps-theme';
+import { MaxContentWidth } from '@/constants/theme';
 
 export default function AppTabs() {
   return (
     <Tabs>
-      <TabSlot style={{ height: '100%' }} />
+      <TabSlot style={styles.tabSlot} />
       <TabList asChild>
         <CustomTabList>
           <TabTrigger name="home" href="/" asChild>
-            <TabButton>Home</TabButton>
+            <TabButton>Consulta</TabButton>
           </TabTrigger>
           <TabTrigger name="explore" href="/explore" asChild>
-            <TabButton>Explore</TabButton>
+            <TabButton>Historial</TabButton>
           </TabTrigger>
         </CustomTabList>
       </TabList>
@@ -48,14 +49,11 @@ export function TabButton({ children, isFocused, ...props }: TabTriggerSlotProps
 }
 
 export function CustomTabList(props: TabListProps) {
-  const scheme = useColorScheme();
-  const colors = Colors[scheme === 'unspecified' ? 'light' : scheme];
-
   return (
     <View {...props} style={styles.tabListContainer}>
       <ThemedView type="backgroundElement" style={styles.innerContainer}>
         <ThemedText type="smallBold" style={styles.brandText}>
-          Expo Starter
+          medidoresAgua
         </ThemedText>
 
         {props.children}
@@ -64,7 +62,7 @@ export function CustomTabList(props: TabListProps) {
           <Pressable style={styles.externalPressable}>
             <ThemedText type="link">Docs</ThemedText>
             <SymbolView
-              tintColor={colors.text}
+              tintColor={COLORS.secondaryBlue}
               name={{ ios: 'arrow.up.right.square', web: 'link' }}
               size={12}
             />
@@ -78,38 +76,44 @@ export function CustomTabList(props: TabListProps) {
 const styles = StyleSheet.create({
   tabListContainer: {
     position: 'absolute',
+    bottom: 0,
     width: '100%',
-    padding: Spacing.three,
+    padding: SPACING.md,
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
   },
   innerContainer: {
-    paddingVertical: Spacing.two,
-    paddingHorizontal: Spacing.five,
-    borderRadius: Spacing.five,
+    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.lg,
+    borderRadius: RADIUS.extraLarge,
     flexDirection: 'row',
     alignItems: 'center',
     flexGrow: 1,
-    gap: Spacing.two,
+    gap: SPACING.sm,
     maxWidth: MaxContentWidth,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    ...SHADOWS.medium,
   },
   brandText: {
     marginRight: 'auto',
   },
   pressed: {
-    opacity: 0.7,
+    opacity: 0.86,
+    transform: [{ scale: 0.98 }],
   },
   tabButtonView: {
-    paddingVertical: Spacing.one,
-    paddingHorizontal: Spacing.three,
-    borderRadius: Spacing.three,
+    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.md,
+    borderRadius: RADIUS.medium,
   },
   externalPressable: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: Spacing.one,
-    marginLeft: Spacing.three,
+    gap: SPACING.xs,
+    marginLeft: SPACING.md,
   },
+  tabSlot: { height: '100%' },
 });
